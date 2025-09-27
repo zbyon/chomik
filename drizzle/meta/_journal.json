@@ -15,6 +15,13 @@
       "when": 1759000185571,
       "tag": "0001_infraction_init",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1759002101506,
+      "tag": "0002_guilds_init",
+      "breakpoints": true
     }
   ]
 }
