@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2025 zbyon
- * Copyright (C) 2025 Piecuu
+ * Copyright (C) 2025 Piecuuu
  * 
  * This file is part of Chomik.
  * Chomik is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -8,9 +8,8 @@
  * You should have received a copy of the GNU General Public License along with Chomik. If not, see <https://www.gnu.org/licenses/>. 
  */
 
-import { ApplicationCommandOptionType, ChatInputCommandInteraction, BaseGuildTextChannel } from "discord.js";
+import { ApplicationCommandOptionType, ChatInputCommandInteraction, BaseGuildTextChannel, Message, ReplyOptions, MessageFlags } from "discord.js";
 import { Discord, Slash, SlashOption } from "discordx";
-import { EchoUsers } from "../config.js";
 
 @Discord()
 class Echo {
@@ -26,14 +25,21 @@ class Echo {
       required: true
     })
     message: string,
+    @SlashOption({
+      name: "reference",
+      description: "referenced message",
+      type: ApplicationCommandOptionType.String,
+      required: false
+    })
+    reference: string,
     interaction: ChatInputCommandInteraction
   ) {
     await interaction.deferReply({
-      ephemeral: true
+      flags: MessageFlags.Ephemeral
     })
 
     const echo_users = ["828959544226742282", "633313654283960330"];
-if(!echo_users.includes(interaction.member?.user.id!)) {
+    if(!echo_users.includes(interaction.member?.user.id!)) {
       return await interaction.editReply({
         content: "ez masz bana"
       })
@@ -44,8 +50,24 @@ if(!echo_users.includes(interaction.member?.user.id!)) {
       })
     }
 
+    let reply: ReplyOptions | undefined = undefined;
+    if(reference) {
+      let referenced_message_obj: Message | undefined;
+      try {
+        referenced_message_obj = interaction.channel?.messages.cache.get(reference) ?? await interaction.channel?.messages.fetch(reference)
+      } catch(err) {
+        console.error(err)
+        return;
+      }
+
+      reply = {
+        messageReference: referenced_message_obj!
+      }
+    }
+
     (interaction.channel! as BaseGuildTextChannel).send({
-      content: message
+      content: message,
+      reply
     })
   }
 }
