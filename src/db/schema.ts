@@ -19,6 +19,7 @@ export const xpTable = pgTable("xp", {
 
 export const infractionTable = pgTable("infractions", {
   id: varchar({ length: 32 }).notNull().primaryKey().unique(),
+  type: integer().notNull(),
   target: varchar({ length: 32 }).notNull(),
   author: varchar({ length: 32 }).notNull(),
   guild: varchar({ length: 32 }).notNull(),

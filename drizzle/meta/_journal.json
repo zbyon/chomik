@@ -29,6 +29,13 @@
       "when": 1759003152132,
       "tag": "0003_guilds_moderator_roles",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1759006462459,
+      "tag": "0004_guilds_add_type",
+      "breakpoints": true
     }
   ]
 }

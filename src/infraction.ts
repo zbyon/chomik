@@ -8,39 +8,44 @@
  */
 
 import { Guild, GuildTextBasedChannel, User } from "discord.js";
-import { Database } from "./database";
-import { infractionTable } from "./db/schema";
-import { UniqueID } from "./uid";
-import { CommonUtils } from "./utils";
+import { Database } from "./database.js";
+import { infractionTable } from "./db/schema.js";
+import { UniqueID } from "./uid.js";
+import { CommonUtils } from "./utils.js";
 
 export class Infraction {
   public static async new(
     { options, infraction, adminChannel, publicChannel }: InfractionConstructor
-  ) {
+  ): Promise<Infraction> {
     infraction.id = new UniqueID().id;
 
     const notify_admins = options & InfractionOption.NotifyAdmins;
     const notify_public = options & InfractionOption.NotifyPublic;
     const notify_target = options & InfractionOption.NotifyTarget;
 
-    await this.addToDB(infraction);
+    const partial_infraction = await this.addToDB(infraction);
+    const infraction_with_date = {...infraction, ...partial_infraction};
 
-    if(notify_admins) await Infraction.notifyAdmins(infraction, adminChannel!);
-    if(notify_target) await Infraction.tryNotifyTarget(infraction);
-    if(notify_public) await Infraction.notifyPublic(infraction, publicChannel!);
+    if(notify_admins && adminChannel) await Infraction.notifyAdmins(infraction_with_date, adminChannel!);
+    if(notify_target) await Infraction.tryNotifyTarget(infraction_with_date);
+    if(notify_public && publicChannel) await Infraction.notifyPublic(infraction_with_date, publicChannel!);
+
+    return infraction_with_date;
   }
 
-  public static async addToDB(infraction: Infraction): Promise<void> {
-    await Database.DB
+  public static async addToDB(infraction: Infraction): Promise<{ time: Date }> {
+    const [res] = await Database.DB
       .insert(infractionTable)
       .values({
-        id: infraction.id,
+        id: infraction.id!,
+        type: infraction.type,
         author: infraction.author.id,
         target: infraction.target.id,
         guild: infraction.guild.id,
         reason: infraction.reason,
-        time: infraction.time,
       })
+      .returning({ time: infractionTable.time });
+    return {...res!};
   }
 
   public static infractionTypeToHumanReadable(type: InfractionType): string {
@@ -55,35 +60,30 @@ export class Infraction {
 
   public static async tryNotifyTarget(infraction: Infraction) {
     await infraction.target.send({
-      content: `
-        joł zostałeś 
-        ${this.infractionTypeToHumanReadable(infraction.type)}a 
-        ${infraction.reason ? `za \`\`\`${CommonUtils.escapeOnlyBackticks(infraction.reason!)}\`\`\`` : ""} 
-        (${infraction.id})
-      `
+      content: 
+      `joł zostałeś ${this.infractionTypeToHumanReadable(infraction.type!)}a ` +
+      `${infraction.reason ? `za \`\`\`${CommonUtils.escapeOnlyBackticks(infraction.reason!)}\`\`\`` : ""} ` +
+      `(${infraction.id})`
     }).catch(()=>{})
   }
 
   public static async notifyAdmins(infraction: Infraction, channel: GuildTextBasedChannel) {
     await channel.send({
-      content: `
-        moj ziom <@${infraction.target.id}> dostal 
-        ${this.infractionTypeToHumanReadable(infraction.type)}a 
-        od <@${infraction.author.id}> 
-        ${infraction.reason ? `za \`\`\`${CommonUtils.escapeOnlyBackticks(infraction.reason!)}\`\`\`` : ""} 
-        (${infraction.id})
-      `
+      content: 
+        `moj ziom <@${infraction.target.id}> dostal ` +
+        `${this.infractionTypeToHumanReadable(infraction.type!)}a ` +
+        `od <@${infraction.author.id}> ` +
+        `${infraction.reason ? `za \`\`\`${CommonUtils.escapeOnlyBackticks(infraction.reason!)}\`\`\`` : ""} ` +
+        `(${infraction.id})`
     }).catch(console.error)
   }
 
   public static async notifyPublic(infraction: Infraction, channel: GuildTextBasedChannel) {
     await channel.send({
-      content: `
-        <@${infraction.target.id}> dostal 
-        ${this.infractionTypeToHumanReadable(infraction.type)}a 
-        ${infraction.reason ? `za \`\`\`${CommonUtils.escapeOnlyBackticks(infraction.reason!)}\`\`\`` : ""} 
-        (${infraction.id})
-      `
+      content: `<@${infraction.target.id}> dostal ` +
+        `${this.infractionTypeToHumanReadable(infraction.type!)}a ` +
+        `${infraction.reason ? `za \`\`\`${CommonUtils.escapeOnlyBackticks(infraction.reason!)}\`\`\`` : ""} ` +
+        `(${infraction.id})`
     }).catch(console.error)
   }
 }
@@ -97,18 +97,18 @@ export enum InfractionOption {
 export interface InfractionConstructor {
   infraction: Infraction;
   options: InfractionOption;
-  publicChannel: GuildTextBasedChannel | undefined;
-  adminChannel: GuildTextBasedChannel | undefined;
+  publicChannel?: GuildTextBasedChannel;
+  adminChannel?: GuildTextBasedChannel;
 } 
 
 export interface Infraction {
-  id: string;
+  id?: string;
   type: InfractionType;
   target: User;
   author: User;
   guild: Guild;
-  reason: string | null;
-  time: Date;
+  reason?: string;
+  time?: Date;
 }
 
 export enum InfractionType {
