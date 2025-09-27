@@ -9,7 +9,6 @@
 
 import { ArgsOf, Discord, On } from "discordx";
 import { Main } from "../main.js";
-import { Interaction } from "discord.js";
 
 @Discord()
 export class InteractionCreateEvent {
