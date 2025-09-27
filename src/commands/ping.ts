@@ -14,11 +14,11 @@ import { ArgsOf, Discord, Slash } from "discordx";
 export class PingCommand {
   @Slash({
     name: "ping",
-    description: "odpowiada pong",
+    description: "Odpowiada pąg",
   })
   private async ping(
     interaction: ChatInputCommandInteraction
   ): Promise<void> {
-    await interaction.reply("pong");
+    await interaction.reply("Pong");
   }
 }
