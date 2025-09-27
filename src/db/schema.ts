@@ -13,4 +13,5 @@ export const xpTable = pgTable("xp", {
   user: varchar({ length: 32 }).notNull().primaryKey(),
   guild: varchar({ length: 32 }).notNull(),
   xp: integer().notNull().default(0),
+  lvl: integer().notNull().default(0),
 });

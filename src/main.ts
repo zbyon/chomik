@@ -29,11 +29,12 @@ export class Main {
         IntentsBitField.Flags.Guilds,
         IntentsBitField.Flags.GuildMessages,
         IntentsBitField.Flags.GuildMembers,
+        IntentsBitField.Flags.MessageContent,
       ],
       silent: false,
     })
 
-    await importx(`${dirname(import.meta.url)}/{events,commands}/**/*.{js,ts}`);
+    await importx(`${dirname(import.meta.url)}/{events,commands,handlers}/**/*.{js,ts}`);
 
     if (!process.env.BOT_TOKEN) {
       throw Error("zapomniałes o BOT_TOKEN");
