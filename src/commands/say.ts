@@ -32,7 +32,7 @@ class Echo {
       ephemeral: true
     })
 
-    const echo_users = ["828959544226742282", "1421490724301574315"];
+    const echo_users = ["828959544226742282", "633313654283960330"];
 if(!echo_users.includes(interaction.member?.user.id!)) {
       return await interaction.editReply({
         content: "ez masz bana"
