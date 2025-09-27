@@ -8,48 +8,43 @@
  * You should have received a copy of the GNU General Public License along with Chomik. If not, see <https://www.gnu.org/licenses/>. 
  */
 
-import { ApplicationCommandOptionType, ChatInputCommandInteraction, Message } from "discord.js";
+import { ApplicationCommandOptionType, ChatInputCommandInteraction, BaseGuildTextChannel } from "discord.js";
 import { Discord, Slash, SlashOption } from "discordx";
+import { EchoUsers } from "../config.js";
 
 @Discord()
-export class SayCommand {
+class Echo {
   @Slash({
     name: "say",
-    description: "Bot powtórzy to, co wpiszesz",
+    description: "Wypowiedź"
   })
-  private async say(
+  async echo (
     @SlashOption({
-      name: "tekst",
-      description: "Wiadomość, którą bot ma wysłać",
-      required: true,
+      name: "message",
+      description: "message",
       type: ApplicationCommandOptionType.String,
+      required: true
     })
-    tekst: string,
+    message: string,
     interaction: ChatInputCommandInteraction
-  ): Promise<void> {
-    // Ukryta odpowiedź tylko dla użytkownika
-    await interaction.reply({ content: "✔️ Wysłałem wiadomość!", ephemeral: true });
+  ) {
+    await interaction.deferReply({
+      ephemeral: true
+    })
 
-    const channel = interaction.channel;
-    if (!channel) return;
-
-    // Sprawdź czy użytkownik użył komendy jako odpowiedź na wiadomość
-    const reference = interaction.options.getMessage("message");
-
-    if (interaction.channel?.isTextBased()) {
-      if (interaction.targetId) {
-        // Jeżeli slash był użyty w kontekście odpowiedzi na wiadomość
-        try {
-          const repliedMessage = await channel.messages.fetch(interaction.targetId);
-          await repliedMessage.reply(tekst);
-        } catch {
-          // jeśli się nie uda pobrać wiadomości, wysyłamy normalnie
-          await channel.send(tekst);
-        }
-      } else {
-        // Normalne wysłanie na kanał
-        await channel.send(tekst);
-      }
+    if(interaction.member?.user.id! != "828959544226742282") {
+      return await interaction.editReply({
+        content: "ez masz bana"
+      })
     }
+    if (interaction.isCommand()) {
+      await interaction.editReply({
+        content: "ok"
+      })
+    }
+
+    (interaction.channel! as BaseGuildTextChannel).send({
+      content: message
+    })
   }
 }
