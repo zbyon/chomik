@@ -21,7 +21,6 @@ export class XPHandler {
   ) {
     if (!message.inGuild() || message.author.bot) return;
     const xp = XPHandler.xp_from_msg(message);
-    console.log(`dobry ${xp} : ${XPHandler.lvl_calc(xp)}`)
     const guild_id = message.guild?.id!;
     const user_id = message.author.id;
 
