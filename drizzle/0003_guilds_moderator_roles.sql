@@ -1,0 +1,1 @@
+ALTER TABLE "guilds" ADD COLUMN "moderatorRoles" varchar(32)[] DEFAULT '{}'::text[] NOT NULL;
