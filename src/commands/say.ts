@@ -12,12 +12,12 @@ import { ApplicationCommandOptionType, ChatInputCommandInteraction, BaseGuildTex
 import { Discord, Slash, SlashOption } from "discordx";
 
 @Discord()
-class Echo {
+export class SayCommand {
   @Slash({
     name: "say",
     description: "Wypowiedź"
   })
-  async echo (
+  private async say (
     @SlashOption({
       name: "message",
       description: "message",

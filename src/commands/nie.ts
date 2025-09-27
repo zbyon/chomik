@@ -8,15 +8,15 @@
  */
 
 import { ChatInputCommandInteraction } from "discord.js";
-import { ArgsOf, Discord, Slash } from "discordx";
+import { Discord, Slash } from "discordx";
 
 @Discord()
-export class PingCommand {
+export class NieCommand {
   @Slash({
     name: "nie",
     description: "Zaprzeczenie",
   })
-  private async ping(
+  private async nie(
     interaction: ChatInputCommandInteraction
   ): Promise<void> {
     await interaction.reply("Nie");
