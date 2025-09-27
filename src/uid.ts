@@ -10,7 +10,7 @@
 import { customAlphabet, nanoid } from "nanoid";
 
 export class UniqueID {
-  protected static _alphabet: string = "abcdefgmrstuwxyz2345689";
+  protected static _alphabet: string = "abcdefgrstwxyz2345689";
   public id: string = "";
 
   constructor() {
