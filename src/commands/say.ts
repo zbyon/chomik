@@ -65,7 +65,7 @@ export class SayCommand {
       }
     }
 
-    (interaction.channel! as BaseGuildTextChannel).send({
+    await (interaction.channel! as BaseGuildTextChannel).send({
       content: message,
       reply
     })
