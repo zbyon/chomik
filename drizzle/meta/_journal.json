@@ -36,6 +36,13 @@
       "when": 1759006462459,
       "tag": "0004_guilds_add_type",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1759180466023,
+      "tag": "0005_infractions_mute_time",
+      "breakpoints": true
     }
   ]
 }

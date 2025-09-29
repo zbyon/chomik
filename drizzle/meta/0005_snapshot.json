@@ -1,0 +1,174 @@
+{
+  "id": "16bd9f6d-84c1-4031-a132-9294ece2e803",
+  "prevId": "39d310a3-ed8e-4470-bc4e-bb9c90a68ddf",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.guilds": {
+      "name": "guilds",
+      "schema": "",
+      "columns": {
+        "guild": {
+          "name": "guild",
+          "type": "varchar(32)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "alertChannel": {
+          "name": "alertChannel",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "publicAlertChannel": {
+          "name": "publicAlertChannel",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "moderatorRoles": {
+          "name": "moderatorRoles",
+          "type": "varchar(32)[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::text[]"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "guilds_guild_unique": {
+          "name": "guilds_guild_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "guild"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.infractions": {
+      "name": "infractions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(32)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "target": {
+          "name": "target",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "author": {
+          "name": "author",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "guild": {
+          "name": "guild",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "reason": {
+          "name": "reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "punishmentTime": {
+          "name": "punishmentTime",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "time": {
+          "name": "time",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "infractions_id_unique": {
+          "name": "infractions_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.xp": {
+      "name": "xp",
+      "schema": "",
+      "columns": {
+        "user": {
+          "name": "user",
+          "type": "varchar(32)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "guild": {
+          "name": "guild",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "xp": {
+          "name": "xp",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "lvl": {
+          "name": "lvl",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

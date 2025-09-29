@@ -109,6 +109,7 @@ export interface Infraction {
   guild: Guild;
   reason?: string;
   time?: Date;
+  punishmentTime?: number; // in seconds
 }
 
 export enum InfractionType {
