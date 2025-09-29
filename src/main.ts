@@ -1,5 +1,5 @@
 import { Client } from "discordx"
-import { IntentsBitField } from "discord.js"
+import { ActivityType, IntentsBitField } from "discord.js"
 import { dirname, importx } from "@discordx/importer";
 
 export class Main {
@@ -18,6 +18,14 @@ export class Main {
         IntentsBitField.Flags.GuildMembers,
       ],
       silent: false,
+      presence: {
+        activities: [
+          {
+            name: "Kalkulator",
+            type: ActivityType.Playing
+          }
+        ]
+      }
     })
 
     await importx(`${dirname(import.meta.url)}/{events,commands}/**/*.{js,ts}`);
