@@ -48,7 +48,7 @@ export class KickModerationCommand {
     }
 
     const target_member: GuildMember = interaction.guild.members.cache.get(target.id) ?? await interaction.guild.members.fetch(target.id);
-    if(await Permission.canMemberPunishOtherMember(interaction.member as GuildMember, target_member) || !target_member.kickable) {
+    if(!(await Permission.canMemberPunishOtherMember(interaction.member as GuildMember, target_member)) || !target_member.kickable) {
       await interaction.editReply({
         content: "jestes bottomem nie mozesz mu nic zrobic"
       })
