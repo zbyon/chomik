@@ -63,7 +63,7 @@ export class KickModerationCommand {
     } 
 
     const infraction_draft: Infraction = {
-      type: InfractionType.WARN,
+      type: InfractionType.KICK,
       author: interaction.user,
       target: target,
       reason: reason!,
