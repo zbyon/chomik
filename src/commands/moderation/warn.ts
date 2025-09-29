@@ -7,10 +7,11 @@
  * You should have received a copy of the GNU General Public License along with Chomik. If not, see <https://www.gnu.org/licenses/>. 
  */
 
-import { ApplicationCommandOptionType, ChatInputCommandInteraction, User } from "discord.js";
+import { ApplicationCommandOptionType, ChatInputCommandInteraction, GuildMember, User } from "discord.js";
 import { Discord, Guard, Slash, SlashOption } from "discordx";
 import { isModerator } from "../../guards/isModerator.js";
 import { Infraction, InfractionOption, InfractionType } from "../../infraction.js";
+import { Permission } from "../../permission.js";
 
 @Discord()
 export class WarnModerationCommand {
@@ -45,6 +46,21 @@ export class WarnModerationCommand {
       })
       return;
     }
+
+    const target_member: GuildMember = interaction.guild.members.cache.get(target.id) ?? await interaction.guild.members.fetch(target.id);
+    if(await Permission.canMemberPunishOtherMember(interaction.member as GuildMember, target_member)) {
+      await interaction.editReply({
+        content: "jestes bottomem nie mozesz mu nic zrobic"
+      })
+      return;
+    }
+
+    if(reason && (reason.length > 400 || reason.length <= 0)) {
+      await interaction.editReply({
+        content: "mickiewicz ten powod jest za dlugi max to 400"
+      })
+      return;
+    } 
 
     const infraction_draft: Infraction = {
       type: InfractionType.WARN,
