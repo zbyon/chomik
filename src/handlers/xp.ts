@@ -57,7 +57,7 @@ export class XPHandler {
   }
 
   static lvl_calc(xp: number): number {
-    const base = 100;
+    const base = 200;
     const exp = 1.8;
     
     return Math.floor(Math.pow(xp / base, 1/exp)) + 1;
