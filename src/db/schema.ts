@@ -24,6 +24,7 @@ export const infractionTable = pgTable("infractions", {
   author: varchar({ length: 32 }).notNull(),
   guild: varchar({ length: 32 }).notNull(),
   reason: text(),
+  punishmentTime: integer(), // in seconds
   time: timestamp().notNull().defaultNow(),
 })
 

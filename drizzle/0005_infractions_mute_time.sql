@@ -1,0 +1,1 @@
+ALTER TABLE "infractions" ADD COLUMN "punishmentTime" integer;

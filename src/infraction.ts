@@ -43,6 +43,7 @@ export class Infraction {
         target: infraction.target.id,
         guild: infraction.guild.id,
         reason: infraction.reason,
+        punishmentTime: infraction.punishmentTime,
       })
       .returning({ time: infractionTable.time });
     return {...res!};
@@ -109,6 +110,7 @@ export interface Infraction {
   guild: Guild;
   reason?: string;
   time?: Date;
+  punishmentTime?: number; // in seconds
 }
 
 export enum InfractionType {
