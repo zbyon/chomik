@@ -30,19 +30,19 @@ export class MuteModerationCommand {
     })
     target: User,
     @SlashOption({
+      name: "time",
+      description: "example: 2d12h",
+      type: ApplicationCommandOptionType.String,
+      required: true,
+    })
+    time: string,
+    @SlashOption({
       name: "reason",
       description: "Reason",
       type: ApplicationCommandOptionType.String,
       required: false,
     })
     reason: string,
-    @SlashOption({
-      name: "time",
-      description: "example: 2d12h",
-      type: ApplicationCommandOptionType.String,
-      required: false,
-    })
-    time: string,
     interaction: ChatInputCommandInteraction,
   ) {
     if(!interaction.guildId) return;
@@ -101,7 +101,7 @@ export class MuteModerationCommand {
       infraction: infraction_draft,
     })
 
-    await target_member.timeout(parsed_time * 1000)
+    await target_member.timeout(parsed_time * 1000, reason ? `${reason} | ${infraction.id}` : infraction.id)
 
     await interaction.editReply(infraction.id!)
   }
