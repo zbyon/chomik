@@ -10,12 +10,16 @@
 import { ApplicationCommandOptionType, ChatInputCommandInteraction, GuildMember, User } from "discord.js";
 import { Discord, Guard, Slash, SlashOption } from "discordx";
 import { isModerator } from "../../guards/isModerator.js";
-import { Infraction, InfractionOption, InfractionType } from "../../infraction.js";
+import { Infraction, InfractionCommonUtils, InfractionOption, InfractionType } from "../../infraction.js";
 import { Permission } from "../../permission.js";
 import { Format } from "../../format.js";
+import { CommonUtils } from "../../utils.js";
 
 @Discord()
 export class BanModerationCommand {
+  protected static maxBanDeleteMessagesTimeSeconds = 604800;
+  protected static maxTimeStringLength = 12;
+
   @Slash({
     name: "ban",
     description: "Ban",
@@ -48,14 +52,14 @@ export class BanModerationCommand {
     if(!interaction.guildId) return;
     await interaction.deferReply();
     
-    if(reason && (reason.length > 400 || reason.length <= 0)) {
+    if(InfractionCommonUtils.checkIfReasonLengthIsWithinLimits(reason)) {
       await interaction.editReply({
         content: "mickiewicz ten powod jest za dlugi max to 400"
       })
       return;
     }
     
-    if((remove_messages_time ?? "").length > 12) {
+    if((remove_messages_time ?? "").length > BanModerationCommand.maxTimeStringLength) {
       await interaction.editReply({
         content: "czlowieku co ty wpisujesz w czas??"
       })
@@ -63,14 +67,14 @@ export class BanModerationCommand {
     }
 
     const parsed_time: number = remove_messages_time ? Math.floor(Format.convertWHMSToMillis(remove_messages_time) / 1000) : 0;
-    if(parsed_time > 604800) {
+    if(parsed_time > BanModerationCommand.maxBanDeleteMessagesTimeSeconds) {
       await interaction.editReply({
         content: "max czasu to 7 dni"
       })
       return;
     }
 
-    if(!interaction.guild?.members.cache.find(u => u.id === target.id)) {
+    if(!CommonUtils.checkIfUserIsInGuild(target, interaction.guild?.members!)) {
       const infraction_draft: Infraction = {
         type: InfractionType.BAN,
         author: interaction.user,
@@ -89,7 +93,7 @@ export class BanModerationCommand {
 
       await interaction.guild?.bans.create(target, {
         deleteMessageSeconds: parsed_time,
-        reason: reason ? `${reason} | ${infraction.id}` : infraction.id,
+        reason: InfractionCommonUtils.makeAPIReasonString(infraction.id!, reason),
       })
       await interaction.editReply({
         content: `nie ma go na serwerze ale spoko | ${infraction.id}`
@@ -97,7 +101,7 @@ export class BanModerationCommand {
       return;
     }
     
-    const target_member: GuildMember = interaction.guild.members.cache.get(target.id) ?? await interaction.guild.members.fetch(target.id);
+    const target_member: GuildMember = await CommonUtils.getGuildMemberFromUserID(target.id, interaction.guild?.members!);
     if(!(await Permission.canMemberPunishOtherMember(interaction.member as GuildMember, target_member)) || !target_member.bannable) {
       await interaction.editReply({
         content: "jestes bottomem nie mozesz mu nic zrobic (albo ja)"
@@ -123,7 +127,7 @@ export class BanModerationCommand {
 
     await target_member.ban({
       deleteMessageSeconds: parsed_time,
-      reason: reason ? `${reason} | ${infraction.id}` : infraction.id,
+      reason: InfractionCommonUtils.makeAPIReasonString(infraction.id!, reason),
     })
 
     await interaction.editReply(infraction.id!)

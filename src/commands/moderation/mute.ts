@@ -10,12 +10,16 @@
 import { ApplicationCommandOptionType, ChatInputCommandInteraction, GuildMember, User } from "discord.js";
 import { Discord, Guard, Slash, SlashOption } from "discordx";
 import { isModerator } from "../../guards/isModerator.js";
-import { Infraction, InfractionOption, InfractionType } from "../../infraction.js";
+import { Infraction, InfractionCommonUtils, InfractionOption, InfractionType } from "../../infraction.js";
 import { Permission } from "../../permission.js";
 import { Format } from "../../format.js";
+import { CommonUtils } from "../../utils.js";
 
 @Discord()
 export class MuteModerationCommand {
+  protected static maxMuteTimeSeconds = 2419200;
+  protected static maxTimeStringLength = 12;
+
   @Slash({
     name: "mute",
     description: "Mute",
@@ -48,14 +52,14 @@ export class MuteModerationCommand {
     if(!interaction.guildId) return;
     await interaction.deferReply();
 
-    if(!interaction.guild?.members.cache.find(u => u.id === target.id)) {
+    if(!CommonUtils.checkIfUserIsInGuild(target, interaction.guild?.members!)) {
       await interaction.editReply({
         content: "gosciu on nie jest na tym serwerze"
       })
       return;
     }
 
-    const target_member: GuildMember = interaction.guild.members.cache.get(target.id) ?? await interaction.guild.members.fetch(target.id);
+    const target_member: GuildMember = await CommonUtils.getGuildMemberFromUserID(target.id, interaction.guild?.members!);
     if(!(await Permission.canMemberPunishOtherMember(interaction.member as GuildMember, target_member)) || !target_member.moderatable) {
       await interaction.editReply({
         content: "jestes bottomem nie mozesz mu nic zrobic (albo ja)"
@@ -63,14 +67,14 @@ export class MuteModerationCommand {
       return;
     }
 
-    if(reason && (reason.length > 400 || reason.length <= 0)) {
+    if(InfractionCommonUtils.checkIfReasonLengthIsWithinLimits(reason)) {
       await interaction.editReply({
         content: "mickiewicz ten powod jest za dlugi max to 400"
       })
       return;
     }
     
-    if(time.length > 12) {
+    if(time.length > MuteModerationCommand.maxTimeStringLength) {
       await interaction.editReply({
         content: "czlowieku co ty wpisujesz w czas??"
       })
@@ -78,7 +82,7 @@ export class MuteModerationCommand {
     }
 
     const parsed_time: number = Math.floor(Format.convertWHMSToMillis(time) / 1000);
-    if(parsed_time > 2419200) {
+    if(parsed_time > MuteModerationCommand.maxMuteTimeSeconds) {
       await interaction.editReply({
         content: "max czasu to 28 dni"
       })
@@ -101,7 +105,7 @@ export class MuteModerationCommand {
       infraction: infraction_draft,
     })
 
-    await target_member.timeout(parsed_time * 1000, reason ? `${reason} | ${infraction.id}` : infraction.id)
+    await target_member.timeout(parsed_time * 1000, InfractionCommonUtils.makeAPIReasonString(infraction.id!, reason))
 
     await interaction.editReply(infraction.id!)
   }

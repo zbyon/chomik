@@ -10,8 +10,9 @@
 import { ApplicationCommandOptionType, ChatInputCommandInteraction, GuildMember, User } from "discord.js";
 import { Discord, Guard, Slash, SlashOption } from "discordx";
 import { isModerator } from "../../guards/isModerator.js";
-import { Infraction, InfractionOption, InfractionType } from "../../infraction.js";
+import { Infraction, InfractionCommonUtils, InfractionOption, InfractionType } from "../../infraction.js";
 import { Permission } from "../../permission.js";
+import { CommonUtils } from "../../utils.js";
 
 @Discord()
 export class WarnModerationCommand {
@@ -40,14 +41,14 @@ export class WarnModerationCommand {
     if(!interaction.guildId) return;
     await interaction.deferReply();
 
-    if(!interaction.guild?.members.cache.find(u => u.id === target.id)) {
+    if(!CommonUtils.checkIfUserIsInGuild(target, interaction.guild?.members!)) {
       await interaction.editReply({
         content: "gosciu on nie jest na tym serwerze"
       })
       return;
     }
 
-    const target_member: GuildMember = interaction.guild.members.cache.get(target.id) ?? await interaction.guild.members.fetch(target.id);
+    const target_member: GuildMember = await CommonUtils.getGuildMemberFromUserID(target.id, interaction.guild?.members!);
     if(await Permission.canMemberPunishOtherMember(interaction.member as GuildMember, target_member)) {
       await interaction.editReply({
         content: "jestes bottomem nie mozesz mu nic zrobic"
@@ -55,7 +56,7 @@ export class WarnModerationCommand {
       return;
     }
 
-    if(reason && (reason.length > 400 || reason.length <= 0)) {
+    if(InfractionCommonUtils.checkIfReasonLengthIsWithinLimits(reason)) {
       await interaction.editReply({
         content: "mickiewicz ten powod jest za dlugi max to 400"
       })
