@@ -7,6 +7,8 @@
  * You should have received a copy of the GNU General Public License along with Chomik. If not, see <https://www.gnu.org/licenses/>. 
  */
 
+import { GuildMember, GuildMemberManager, User } from "discord.js";
+
 export class CommonUtils {
   public static escapeMarkdown(input: string): string {
     return input.replaceAll("`", "\\`")
@@ -22,5 +24,13 @@ export class CommonUtils {
 
   public static escapeOnlyBackticks(input: string): string {
     return input.replaceAll("`", "\\`");
+  }
+
+  public static async getGuildMemberFromUserID(user: string, guildMembers: GuildMemberManager): Promise<GuildMember> {
+    return guildMembers.cache.get(user) ?? await guildMembers.fetch(user)
+  }
+
+  public static checkIfUserIsInGuild(user: User, guildMembers: GuildMemberManager): boolean {
+    return guildMembers.cache.find(u => u.id === user.id) !instanceof GuildMember;
   }
 }

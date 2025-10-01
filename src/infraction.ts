@@ -89,6 +89,15 @@ export class Infraction {
   }
 }
 
+export class InfractionCommonUtils {
+  public static checkIfReasonLengthIsWithinLimits(reason: string): boolean {
+    return typeof reason === "string" ? (reason.length > 400 || reason.length <= 0) : false;
+  }
+  public static makeAPIReasonString(infraction_id: string, reason: string): string {
+    return reason ? `${reason} | ${infraction_id}` : infraction_id;
+  }
+}
+
 export type InfractionOptionBitfield = number;
 export enum InfractionOption {
   NotifyPublic = 0b1,
