@@ -7,17 +7,13 @@
  * You should have received a copy of the GNU General Public License along with Chomik. If not, see <https://www.gnu.org/licenses/>. 
  */
 
-import { Discord, Once } from "discordx";
-import { Main } from "../main.js";
+import { defineConfig } from 'drizzle-kit';
 
-@Discord()
-export class ReadyEvent {
-  @Once({ event: "clientReady" })
-  private async ready() {
-    await Main.Client.initApplicationCommands().then(() => {
-      console.log("komendy sie zrobiły")
-    })
-
-    console.log("spoko ziom wszystko gra")
-  }
-}
+export default defineConfig({
+  out: './drizzle',
+  schema: './src/db/schema.ts',
+  dialect: 'postgresql',
+  dbCredentials: {
+    url: process.env.DATABASE_URL!,
+  },
+});

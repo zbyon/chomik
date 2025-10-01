@@ -7,17 +7,20 @@
  * You should have received a copy of the GNU General Public License along with Chomik. If not, see <https://www.gnu.org/licenses/>. 
  */
 
-import { Discord, Once } from "discordx";
-import { Main } from "../main.js";
+import { drizzle, NodePgDatabase } from 'drizzle-orm/node-postgres';
 
-@Discord()
-export class ReadyEvent {
-  @Once({ event: "clientReady" })
-  private async ready() {
-    await Main.Client.initApplicationCommands().then(() => {
-      console.log("komendy sie zrobiły")
-    })
+export class Database {
+  private static _db: NodePgDatabase;
 
-    console.log("spoko ziom wszystko gra")
+  static get DB(): NodePgDatabase {
+    return this._db;
+  }
+
+  static connect(): void {
+    if(!process.env.DATABASE_URL) {
+      throw new Error("zapomniałeś o DATABASE_URL");
+    }
+
+    this._db = drizzle(process.env.DATABASE_URL!);
   }
 }

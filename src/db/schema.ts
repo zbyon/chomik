@@ -7,17 +7,10 @@
  * You should have received a copy of the GNU General Public License along with Chomik. If not, see <https://www.gnu.org/licenses/>. 
  */
 
-import { Discord, Once } from "discordx";
-import { Main } from "../main.js";
+import { integer, pgTable, varchar } from "drizzle-orm/pg-core";
 
-@Discord()
-export class ReadyEvent {
-  @Once({ event: "clientReady" })
-  private async ready() {
-    await Main.Client.initApplicationCommands().then(() => {
-      console.log("komendy sie zrobiły")
-    })
-
-    console.log("spoko ziom wszystko gra")
-  }
-}
+export const xpTable = pgTable("xp", {
+  user: varchar({ length: 32 }).notNull().primaryKey(),
+  guild: varchar({ length: 32 }).notNull(),
+  xp: integer().notNull().default(0),
+});
