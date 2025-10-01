@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 zbyon
+ * Copyright (C) 2025 Piecuuu
 
  * This file is part of Chomik.
  * Chomik is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -7,18 +7,20 @@
  * You should have received a copy of the GNU General Public License along with Chomik. If not, see <https://www.gnu.org/licenses/>. 
  */
 
-import { ChatInputCommandInteraction } from "discord.js";
-import { Discord, Slash } from "discordx";
+export class CommonUtils {
+  public static escapeMarkdown(input: string): string {
+    return input.replaceAll("`", "\\`")
+                .replaceAll("-", "\\-")
+                .replaceAll("#", "\\#")
+                .replaceAll("*", "\\*")
+                .replaceAll("\\", "\\\\")
+                .replaceAll(">", "\\>")
+                .replaceAll("|", "\\|")
+                .replaceAll("~", "\\~")
+                .replaceAll("_", "\\_");
+  }
 
-@Discord()
-export class TakCommand {
-  @Slash({
-    name: "tak",
-    description: "Potwierdza",
-  })
-  private async tak(
-    interaction: ChatInputCommandInteraction
-  ): Promise<void> {
-    await interaction.reply("Tak");
+  public static escapeOnlyBackticks(input: string): string {
+    return input.replaceAll("`", "\\`");
   }
 }

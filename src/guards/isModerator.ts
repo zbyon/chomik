@@ -1,0 +1,49 @@
+/*
+ * Copyright (C) 2025 Piecuuu
+
+ * This file is part of Chomik.
+ * Chomik is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Chomik is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Chomik. If not, see <https://www.gnu.org/licenses/>. 
+ */
+
+import {
+  ButtonInteraction,
+  ChannelSelectMenuInteraction,
+  ChatInputCommandInteraction,
+  CommandInteraction,
+  ContextMenuCommandInteraction,
+  GuildMember,
+  MentionableSelectMenuInteraction,
+  MessageContextMenuCommandInteraction,
+  ModalSubmitInteraction,
+  RoleSelectMenuInteraction,
+  StringSelectMenuInteraction,
+  UserContextMenuCommandInteraction,
+  UserSelectMenuInteraction
+} from "discord.js";
+import { Client, GuardFunction } from "discordx";
+import { Permission } from "../permission.js";
+
+export const isModerator: GuardFunction<
+  | ButtonInteraction
+  | ChannelSelectMenuInteraction
+  | CommandInteraction
+  | ContextMenuCommandInteraction
+  | MentionableSelectMenuInteraction
+  | ModalSubmitInteraction
+  | RoleSelectMenuInteraction
+  | StringSelectMenuInteraction
+  | UserSelectMenuInteraction
+  | UserContextMenuCommandInteraction
+  | MessageContextMenuCommandInteraction
+  | ChatInputCommandInteraction
+> = async (interaction, _: Client, next) => {
+  if(!(await Permission.isAdmin(interaction.member as GuildMember))) {
+    return await interaction.reply({
+      content: "https://tenor.com/view/maciek-brzuch-brzuch-boli-brzuch-boli-od-pizzy-boli-brzuch-gif-11153139534340556836"
+    })
+   } else {
+    await next();
+  }
+};

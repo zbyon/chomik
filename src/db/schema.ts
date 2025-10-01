@@ -7,10 +7,30 @@
  * You should have received a copy of the GNU General Public License along with Chomik. If not, see <https://www.gnu.org/licenses/>. 
  */
 
-import { integer, pgTable, varchar } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+import { integer, pgTable, text, timestamp, varchar } from "drizzle-orm/pg-core";
 
 export const xpTable = pgTable("xp", {
   user: varchar({ length: 32 }).notNull().primaryKey(),
   guild: varchar({ length: 32 }).notNull(),
   xp: integer().notNull().default(0),
+  lvl: integer().notNull().default(0),
 });
+
+export const infractionTable = pgTable("infractions", {
+  id: varchar({ length: 32 }).notNull().primaryKey().unique(),
+  type: integer().notNull(),
+  target: varchar({ length: 32 }).notNull(),
+  author: varchar({ length: 32 }).notNull(),
+  guild: varchar({ length: 32 }).notNull(),
+  reason: text(),
+  punishmentTime: integer(), // in seconds
+  time: timestamp().notNull().defaultNow(),
+})
+
+export const guildsTable = pgTable("guilds", {
+  guild: varchar({ length: 32 }).notNull().primaryKey().unique(),
+  alertChannel: varchar({ length: 32 }),
+  publicAlertChannel: varchar({ length: 32 }),
+  moderatorRoles: varchar({ length: 32 }).array().notNull().default(sql`'{}'::text[]`),
+})
