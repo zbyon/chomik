@@ -26,6 +26,7 @@ export const infractionTable = pgTable("infractions", {
   reason: text(),
   punishmentTime: integer(), // in seconds
   time: timestamp().notNull().defaultNow(),
+  context: varchar({ length: 32 }), // message id
 })
 
 export const guildsTable = pgTable("guilds", {
