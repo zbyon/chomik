@@ -82,8 +82,8 @@ export class BanModerationCommand {
 
       const infraction = await Infraction.new({
         options: InfractionOption.NotifyAdmins |
-                InfractionOption.NotifyPublic |
-                InfractionOption.NotifyTarget,
+                 InfractionOption.NotifyPublic |
+                 InfractionOption.NotifyTarget,
         infraction: infraction_draft,
       })
 
