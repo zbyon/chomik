@@ -9,6 +9,7 @@
 
 import { sql } from "drizzle-orm";
 import { integer, pgTable, text, timestamp, varchar } from "drizzle-orm/pg-core";
+import { UniqueID } from "../uid";
 
 export const xpTable = pgTable("xp", {
   user: varchar({ length: 32 }).notNull().primaryKey(),
@@ -34,4 +35,32 @@ export const guildsTable = pgTable("guilds", {
   alertChannel: varchar({ length: 32 }),
   publicAlertChannel: varchar({ length: 32 }),
   moderatorRoles: varchar({ length: 32 }).array().notNull().default(sql`'{}'::text[]`),
+  reportChannel: varchar({ length: 32 }),
+})
+
+export const reportTable = pgTable("reports", {
+  id: varchar({ length: 32 }).notNull().primaryKey().unique().$default(() => new UniqueID().id),
+  target: varchar({ length: 32 }).notNull(),
+  author: varchar({ length: 32 }).notNull(),
+  guild: varchar({ length: 32 }).notNull(),
+  reason: text(),
+  time: timestamp().notNull().defaultNow(),
+  status: integer().notNull().default(0), // default is open
+  context: varchar({ length: 32 }).references(() => reportContextTable.message),
+})
+
+export const reportContextTable = pgTable("reportContexts", {
+  message: varchar({ length: 32 }), // message id
+  archive: varchar({ length: 32 }).array().references(() => messageArchiveTable.id).notNull().default(sql`'{}'::text[]`),
+  channel: varchar({ length: 32 }),
+})
+
+export const messageArchiveTable = pgTable("messageArchive", {
+  id: varchar({ length: 32 }).notNull().primaryKey().unique(),
+  author: varchar({ length: 32 }).notNull(),
+  guild: varchar({ length: 32 }).notNull(),
+  created: timestamp().notNull(),
+
+  content: varchar({ length: 4000 }),
+  imageAttachmentID: varchar({ length: 64 }),
 })
