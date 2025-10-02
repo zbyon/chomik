@@ -42,7 +42,7 @@ export class Main {
       }
     })
 
-    await importx(`${dirname(import.meta.url)}/{events,commands,handlers}/**/*.{js,ts}`);
+    await importx(`${dirname(import.meta.url)}/{events,commands,handlers,ctx}/**/*.{js,ts}`);
 
     if (!process.env.BOT_TOKEN) {
       throw Error("zapomniałes o BOT_TOKEN");
