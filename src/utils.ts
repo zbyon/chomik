@@ -34,8 +34,8 @@ export class CommonUtils {
     return guildMembers.cache.find(u => u.id === user.id) !instanceof GuildMember;
   }
 
-  public static parseEnvBoolean(env_var: string): boolean {
-    switch(env_var.toLowerCase()) {
+  public static parseEnvBoolean(env_var: string | undefined): boolean {
+    switch((env_var ?? "").toLowerCase()) {
       case "1":
       case "true":
       case "yes":
