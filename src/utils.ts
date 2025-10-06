@@ -33,4 +33,23 @@ export class CommonUtils {
   public static checkIfUserIsInGuild(user: User, guildMembers: GuildMemberManager): boolean {
     return guildMembers.cache.find(u => u.id === user.id) !instanceof GuildMember;
   }
+
+  public static parseEnvBoolean(env_var: string): boolean {
+    switch(env_var.toLowerCase()) {
+      case "1":
+      case "true":
+      case "yes":
+      case "y":
+        return true;
+
+      case "0":
+      case "false":
+      case "no":
+      case "n":
+        return false;
+
+      default:
+        throw new Error("Value not a stringy boolean");
+    }
+  }
 }
