@@ -14,6 +14,7 @@ import { dirname, importx } from "@discordx/importer";
 import { Database } from "./database.js";
 import { CommonUtils } from "./utils.js";
 import { importxWithIgnore } from "./importx.js";
+import fs from "fs/promises";
 
 export class Main {
   private static _client: Client
@@ -57,10 +58,20 @@ export class Main {
       await importxWithIgnore(importIgnores, importAllGlob);
     }
 
-    if (!process.env.BOT_TOKEN) {
+    const BOT_TOKEN = process.env.BOT_TOKEN;
+    const BOT_TOKEN_PATH = process.env.BOT_TOKEN_PATH;
+
+    if (!(BOT_TOKEN || BOT_TOKEN_PATH)) {
       throw Error("zapomniałes o BOT_TOKEN");
+    } else if(BOT_TOKEN) {
+      await this._client.login(BOT_TOKEN);
+    } else if(BOT_TOKEN_PATH) {
+      await fs.access(BOT_TOKEN_PATH, fs.constants.F_OK)
+      const raw_content = await fs.readFile(BOT_TOKEN_PATH, { encoding: "utf-8", flag: "r" });
+      const first_line = raw_content.split("\n")[0]
+      if(first_line?.length! < 64) throw new Error("Invalid token (length), empty file or token not on first line.") // my token is 72 characters so 64 should be enough
+      await this._client.login(first_line!);
     }
-    await this._client.login(process.env.BOT_TOKEN);
   }
 }
 
