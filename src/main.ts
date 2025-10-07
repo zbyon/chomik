@@ -51,7 +51,7 @@ export class Main {
     if(!CommonUtils.parseEnvBoolean(process.env.CONFIG_FEATURE_MODERATION, true)) importIgnores.push(`commands/moderation`);
     if(!CommonUtils.parseEnvBoolean(process.env.CONFIG_FEATURE_SAY, true)) importIgnores.push(`commands/say`);
 
-    if(CommonUtils.parseEnvBoolean(process.env.CONFIG_FORCE_IMPORT_ALL, true)) {
+    if(CommonUtils.parseEnvBoolean(process.env.CONFIG_FORCE_IMPORT_ALL, false)) {
       await importx(importAllGlob);
     } else {
       await importxWithIgnore(importIgnores, importAllGlob);
