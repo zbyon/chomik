@@ -34,7 +34,7 @@ export class CommonUtils {
     return guildMembers.cache.find(u => u.id === user.id) !instanceof GuildMember;
   }
 
-  public static parseEnvBoolean(env_var: string | undefined): boolean {
+  public static parseEnvBoolean(env_var: string | undefined, default_value: boolean = false): boolean {
     switch((env_var ?? "").toLowerCase()) {
       case "1":
       case "true":
@@ -49,7 +49,7 @@ export class CommonUtils {
         return false;
 
       default:
-        throw new Error("Value not a stringy boolean");
+        return default_value
     }
   }
 }

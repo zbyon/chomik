@@ -13,6 +13,7 @@ import { ActivityType, IntentsBitField } from "discord.js"
 import { dirname, importx } from "@discordx/importer";
 import { Database } from "./database.js";
 import { CommonUtils } from "./utils.js";
+import { importxWithIgnore } from "./importx.js";
 
 export class Main {
   private static _client: Client
@@ -43,20 +44,23 @@ export class Main {
       }
     })
 
-    if(CommonUtils.parseEnvBoolean(process.env.CONFIG_FORCE_IMPORT_ALL)) {
-      await importx(`${dirname(import.meta.url)}/{events,commands,handlers}/**/*.{js,ts}`);
-    } else if(!CommonUtils.parseEnvBoolean(process.env.CONFIG_FEATURE_XP)) {
-      await this.importButIgnorePath(`handlers/xp`, `${dirname(import.meta.url)}/{events,commands,handlers}/**/*.{js,ts}`);
+    const importAllGlob: string = `${dirname(import.meta.url)}/{events,commands,handlers}/**/*.{js,ts}`;
+
+    let importIgnores: string[] = [];
+    if(!CommonUtils.parseEnvBoolean(process.env.CONFIG_FEATURE_XP, true)) importIgnores.push(`handlers/xp`);
+    if(!CommonUtils.parseEnvBoolean(process.env.CONFIG_FEATURE_MODERATION, true)) importIgnores.push(`commands/moderation`);
+    if(!CommonUtils.parseEnvBoolean(process.env.CONFIG_FEATURE_SAY, true)) importIgnores.push(`commands/say`);
+
+    if(CommonUtils.parseEnvBoolean(process.env.CONFIG_FORCE_IMPORT_ALL, true)) {
+      await importx(importAllGlob);
+    } else {
+      await importxWithIgnore(importIgnores, importAllGlob);
     }
 
     if (!process.env.BOT_TOKEN) {
       throw Error("zapomniałes o BOT_TOKEN");
     }
     await this._client.login(process.env.BOT_TOKEN);
-  }
-
-  private static async importButIgnorePath(ignore: string, ...paths: string[]) {
-    
   }
 }
 
